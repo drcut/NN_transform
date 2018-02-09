@@ -7,10 +7,10 @@
 #include<stdio.h>
 %}
 %token INTEGER FLOAT PLUS MINUS MULTIPLY DIV NOT LP RP LB RB DOT
-%token VARIABLE LIST ASSIGNOP
+%token VARIABLE LIST ASSIGNOP MATMUL CONSTANT
 %type Program ExtDefList ExtDef ExtDecList Exp
-%type FUNC
-
+%type FUNC NumericalOP
+%type NNFUNC
 /*priority*/
 %right ASSIGNOP
 %left PLUS MINUS
@@ -22,4 +22,7 @@ Program:|ExtDefList {};
 ExtDefList:ExtDef ExtDefList {}| {};
 ExtDef:Dec{};
 Dec:VARIABLE ASSIGNOP Exp {} | VARIABLE ASSIGNOP Dec {};
-Exp:Exp 
+NumericalOP:PLUS{}|MINUS{}|MULTIPLY{}|DIV{};
+Exp:VARIABLE{}|Exp NumericalOP Exp{}|FUNC{};
+NNFUNC:MATMUL{}|CONSTANT{};
+FUNC:NNFUNC LP PARAMETERS RP{};
