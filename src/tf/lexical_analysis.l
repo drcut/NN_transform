@@ -40,20 +40,22 @@ MATMUL tf.matmul
 CONSTANT tf.constant
 AERROR .
 %%
-{FLOAT} {printf("float ");}
-{VARIABLE} {printf("variable ");}
-{MATMUL} {printf("matmul ");}
-{CONSTANT} {printf("constant ");}
-{LP} {printf("(");}
-{RP} {printf(")");}
-{LB} {printf("[");}
-{RB} {printf("]");}
+{FLOAT} {printf("float ");return FLOAT;}
+{VARIABLE} {printf("variable ");return VARIABLE;}
+{MATMUL} {printf("matmul ");return MATMUL;}
+{CONSTANT} {printf("constant ");return CONSTANT}
+{LP} {printf("(");return LP;}
+{RP} {printf(")");return RP;}
+{LB} {printf("[");return LB;}
+{RB} {printf("]");return RB;}
 %%
+/*
 int main()
 {
     yylex();
     return 0;
 }
+*/
 int yywrap()
 {
     return 1;
