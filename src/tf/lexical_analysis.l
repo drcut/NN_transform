@@ -6,6 +6,8 @@
 %{
 #include "stdio.h"
 #include "stdlib.h"
+#include "syntactic_analysis.tab.h"
+#include "util.h"
 %}
 type int|float
 STRUCT struct
@@ -40,14 +42,15 @@ MATMUL tf.matmul
 CONSTANT tf.constant
 AERROR .
 %%
-{FLOAT} {printf("float ");return FLOAT;}
-{VARIABLE} {printf("variable ");return VARIABLE;}
-{MATMUL} {printf("matmul ");return MATMUL;}
-{CONSTANT} {printf("constant ");return CONSTANT}
-{LP} {printf("(");return LP;}
-{RP} {printf(")");return RP;}
-{LB} {printf("[");return LB;}
-{RB} {printf("]");return RB;}
+{FLOAT} {yylval.str = yytext;return FLOAT;}
+{VARIABLE} {yylval.str = yytext;return VARIABLE;}
+{MATMUL} {yylval.str = "matmul";return MATMUL;}
+{CONSTANT} {yylval.str = "constant";return CONSTANT;}
+{LP} {yylval.str = "(";return LP;}
+{RP} {yylval.str = ")";return RP;}
+{LB} {yylval.str = "[";return LB;}
+{RB} {yylval.str = "]";return RB;}
+{COMMA} {yylval.str = ",";return COMMA;}
 %%
 /*
 int main()

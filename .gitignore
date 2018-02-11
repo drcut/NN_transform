@@ -1,1 +1,4 @@
 *.yy.c
+*.out
+*.tab.h
+*.tab.c

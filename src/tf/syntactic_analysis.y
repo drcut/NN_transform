@@ -4,35 +4,26 @@
 *Descroption:Semantic analysis for tensorflow.
 */
 %{
+#include<unistd.h>
 #include<stdio.h>
+#include "util.h"
 %}
-%start Program
+%start FUNC
 %union{
     char* str;
-    struct node* p;
+    struct node *p;
 }
 
-%token INTEGER FLOAT PLUS MINUS MULTIPLY DIV NOT LP RP LB RB DOT
-%token VARIABLE LIST ASSIGNOP MATMUL CONSTANT
-%type Program ExtDefList ExtDef ExtDecList Exp
-%type <p> FUNC NumericalOP
-%type <str> NNFUNC
+%token <str> LP RP LB RB COMMA FLOAT
+%token <str> VARIABLE MATMUL CONSTANT
+%type <p> FUNC
+%type <str> NNFUNC PARAMETERS
 
 /*priority*/
-%right ASSIGNOP
-%left PLUS MINUS
-%left MULTIPLY DIV
-%right NOT
+%right NOT COMMA
 %left LP RP LB RB DOT
 %%
-Program:{}|ExtDefList {};
-ExtDefList:ExtDef ExtDefList {}| {};
-ExtDef:Dec{};
-Dec:VARIABLE ASSIGNOP Exp {} | VARIABLE ASSIGNOP Dec {};
-NumericalOP:PLUS{}|MINUS{}|MULTIPLY{}|DIV{};
-Exp:VARIABLE{}|Exp NumericalOP Exp{}|FUNC{};
-NNFUNC:MATMUL{}|CONSTANT{};
-FUNC:NNFUNC LP PARAMETERS RP{$$ = &(node($1,0));printf("%s\n",$1)};
+
+FUNC:NNFUNC LP PARAMETERS RP{$$ = new_node($1,0);printf("%s\n",$1);};
 NNFUNC: CONSTANT {$$ = "constant";}|MATMUL{$$ = "matmul";};
-PARAMETERS: PARAMETER PARAMETERS{} | {};
-PARAMETER: VARIABLE{};
+PARAMETERS: VARIABLE COMMA VARIABLE{$$ = "parameters";};
