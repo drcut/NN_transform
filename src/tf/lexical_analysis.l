@@ -18,7 +18,7 @@ WHILE while
 PLUS \+
 MINUS -
 INTEGER [1-9]+[0-9]*|0
-FLOAT   [0-9]+\.[0-9][.]?
+FLOAT   [0-9]+\.[0-9]*
 VARIABLE [a-z_A-Z][a-zA-Z_0-9]*
 SPACE [ \t\r]*
 EOL \n
@@ -42,10 +42,12 @@ RC \}
 MATMUL tf.matmul
 CONSTANT tf.constant
 AERROR .
+MASS [.]*
 %%
 {ASSIGNOP} {return ASSIGNOP;}
 {EOL} {}
-{FLOAT} {yylval.str = malloc(sizeof(char*) * strlen(yytext));
+{FLOAT} {printf("get float:%s\n",yytext);
+        yylval.str = malloc(sizeof(char*) * strlen(yytext));
         strcpy(yylval.str,yytext);
         return FLOAT;}
 {VARIABLE} {printf("get variable:%s\n",yytext);
@@ -60,6 +62,9 @@ AERROR .
 {RB} {yylval.str = "]";return RB;}
 {COMMA} {yylval.str = ",";return COMMA;}
 {WELL} {yylval.str = "#";return WELL;}
+{MASS} {yylval.str = malloc(sizeof(char*) * strlen(yytext));
+        strcpy(yylval.str,yytext);
+        return MASS;}
 {SPACE} {}
 %%
 int yywrap()

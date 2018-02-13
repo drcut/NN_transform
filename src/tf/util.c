@@ -67,6 +67,7 @@ void add_node(char* node_name,struct node* p)
     if(i==tail)
         tail++;
     node_list[i] = p;
+    name_list[i] = node_name;
 }
 int main()
 {
