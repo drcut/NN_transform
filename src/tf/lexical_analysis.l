@@ -45,8 +45,13 @@ AERROR .
 %%
 {ASSIGNOP} {return ASSIGNOP;}
 {EOL} {}
-{FLOAT} {yylval.str = yytext;return FLOAT;}
-{VARIABLE} {printf("get variable:%s\n",yytext);yylval.str = yytext;return VARIABLE;}
+{FLOAT} {yylval.str = malloc(sizeof(char*) * strlen(yytext));
+        strcpy(yylval.str,yytext);
+        return FLOAT;}
+{VARIABLE} {printf("get variable:%s\n",yytext);
+            yylval.str = malloc(sizeof(char*) * strlen(yytext));
+            strcpy(yylval.str,yytext);
+            return VARIABLE;}
 {MATMUL} {yylval.str = "matmul";return MATMUL;}
 {CONSTANT} {yylval.str = "constant";return CONSTANT;}
 {LP} {yylval.str = "(";return LP;}
