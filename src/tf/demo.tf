@@ -1,1 +1,1 @@
-tf.matmul(matrix1, matrix2)
+product = tf.matmul   ( matrix1, matrix2)

@@ -24,6 +24,7 @@ SPACE [ \t\r]*
 EOL \n
 SEMI ;
 COMMA ,
+WELL #
 ASSIGNOP =
 RELOP >|<|>=|<=|==|!=
 STAR \*
@@ -42,8 +43,10 @@ MATMUL tf.matmul
 CONSTANT tf.constant
 AERROR .
 %%
+{ASSIGNOP} {return ASSIGNOP;}
+{EOL} {}
 {FLOAT} {yylval.str = yytext;return FLOAT;}
-{VARIABLE} {yylval.str = yytext;return VARIABLE;}
+{VARIABLE} {printf("get variable:%s\n",yytext);yylval.str = yytext;return VARIABLE;}
 {MATMUL} {yylval.str = "matmul";return MATMUL;}
 {CONSTANT} {yylval.str = "constant";return CONSTANT;}
 {LP} {yylval.str = "(";return LP;}
@@ -51,14 +54,9 @@ AERROR .
 {LB} {yylval.str = "[";return LB;}
 {RB} {yylval.str = "]";return RB;}
 {COMMA} {yylval.str = ",";return COMMA;}
+{WELL} {yylval.str = "#";return WELL;}
+{SPACE} {}
 %%
-/*
-int main()
-{
-    yylex();
-    return 0;
-}
-*/
 int yywrap()
 {
     return 1;

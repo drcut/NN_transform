@@ -7,9 +7,15 @@ extern char* yytext;
 void yyerror(char*s,...); //变长参数错误处理函数
 struct node
 {
-    char* name;
+    char* op_name;
+    char* node_name;
     int input_cnt;
     struct node** input;
 };
-struct node* new_node(char* name,int num,...); 
+struct node* new_node(char* node_op_name,int num,...);
 
+//char* get_name(char* raw_name);// to resolve name reuse problem
+
+struct node* get_node(char* variable_name);
+
+void add_node(char* node_name,struct node* p);
