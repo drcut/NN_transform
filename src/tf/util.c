@@ -27,13 +27,30 @@ struct node* new_node(char* node_op_name,int num,...)//construct node of NN DAG
     va_end(valist);
     return tmp;
 }
+void travel_node(struct node* start)
+{
+    printf("name=%s\n",start->node_name);
+    printf("op name=%s\nattrs=%s\n",start->op_name,start->attrs);
+    printf("son_num=%d\n",start->input_cnt);
+    int i;
+    for(i = 0;i<start->input_cnt;i++)
+        travel_node(start->input[i]);
+    return;
+}
 char* concat_str(int num,...)
 {
     va_list valist;
+    va_list tmp_list;
+    va_start(tmp_list,num);
+    int i ;
+    unsigned int total_size = 1; // for '\0'
+    for( i = 0;i<num;i++)
+        total_size += strlen(va_arg(tmp_list,const char*));
+    printf("total size=%u\n",total_size);
+    va_end(tmp_list);
     va_start(valist,num);
     //TODO:remove constant number
-    char* res = malloc(1000 * sizeof(char));
-    int i = 0;
+    char* res = malloc(total_size * sizeof(char));
     for(i = 0;i<num;i++)
     {
         char* t = va_arg(valist,char*);

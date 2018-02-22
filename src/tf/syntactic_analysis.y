@@ -26,9 +26,9 @@
 
 Program:ExtDefList{$$ = "program";};
 ExtDefList:ExtDef ExtDefList | {$$="extdeflist";};
-ExtDef:VARIABLE ASSIGNOP EXPRESSION{$$ = $1;$3->node_name = $1;add_node($1,$3);};
+ExtDef:VARIABLE ASSIGNOP EXPRESSION{$$ = $1;$3->node_name = $1;add_node($1,$3);travel_node($3);};
 EXPRESSION:
-    MATMUL LP VARIABLE COMMA VARIABLE KWARG_LIST RP{$$ = new_node(concat_str(3,"matmul",$3,$5),2,get_node($3),get_node($5));$$->attrs = $6;}|
+    MATMUL LP VARIABLE COMMA VARIABLE KWARG_LIST RP{$$ = new_node("matmul",2,get_node($3),get_node($5));$$->attrs = $6;}|
     CONSTANT LP List RP{$$ = new_node("constant",0);};
 KWARG_LIST:{$$ = "";}
     |COMMA Serial {$$ = $2;};
