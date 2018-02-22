@@ -27,7 +27,7 @@ pool3=tf.nn.max_pool(conv3,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME',name
 norm3=tf.nn.lrn(pool3,4,bias=1.0,alpha=0.001/9,beta=0.75,name='norm3')
 drop3=tf.nn.dropout(norm3,_dropout)
      
-dense1=tf.reshape(drop3,shape=[-1,tf.Variable(tf.random_normal([4*4*256,1024])).get_shape().as_list()[0]])
+dense1=tf.reshape(drop3,shape=[-1,4*4*256])
 dense1=tf.nn.relu(tf.matmul(dense1,tf.Variable(tf.random_normal([4*4*256,1024]))+tf.Variable(tf.random_normal([1024])),name='fc1'))
 dense2=tf.nn.relu(tf.matmul(dense1,tf.Variable(tf.random_normal([1024,1024]))+tf.Variable(tf.random_normal([1024])),name='fc2'))
 pred=tf.matmul(dense2,tf.Variable(tf.random_normal([1024,10]))+tf.Variable(tf.random_normal([n_classes])))
