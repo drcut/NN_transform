@@ -11,6 +11,7 @@ struct node
     char* node_name;
     int input_cnt;
     struct node** input;
+    char* attrs;
 };
 struct node* new_node(char* node_op_name,int num,...);
 
@@ -19,3 +20,5 @@ struct node* new_node(char* node_op_name,int num,...);
 struct node* get_node(char* variable_name);
 
 void add_node(char* node_name,struct node* p);
+
+char* concat_str(int num,...);

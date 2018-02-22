@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 #include "util.h"
 #define MAXN 100
 char* name_list[MAXN];
@@ -16,13 +17,30 @@ struct node* new_node(char* node_op_name,int num,...)//construct node of NN DAG
 {
     struct node* tmp = (struct node*)malloc(sizeof(struct node));
     va_list valist;
+    va_start(valist,num);
     tmp->op_name = node_op_name;
     tmp->input_cnt = num;
     tmp->input = malloc(num * sizeof(struct node*));
     int i;
     for(i = 0;i<num;i++)
         tmp->input[i] = va_arg(valist, struct node*);
+    va_end(valist);
     return tmp;
+}
+char* concat_str(int num,...)
+{
+    va_list valist;
+    va_start(valist,num);
+    //TODO:remove constant number
+    char* res = malloc(1000 * sizeof(char));
+    int i = 0;
+    for(i = 0;i<num;i++)
+    {
+        char* t = va_arg(valist,char*);
+        strcat(res,t);
+    }
+    va_end(valist);
+    return res;
 }
 void yyerror(char*s,...) //变长参数错误处理函数
 {
@@ -30,6 +48,7 @@ void yyerror(char*s,...) //变长参数错误处理函数
         va_start(ap,s);
         vfprintf(stderr,s,ap);
         fprintf(stderr,"\n");
+        va_end(ap);
 }
 char* get_name(char* raw_name)
 {

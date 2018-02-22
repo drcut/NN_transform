@@ -19,6 +19,7 @@ PLUS \+
 MINUS -
 INTEGER [1-9]+[0-9]*|0
 FLOAT   [0-9]+\.[0-9]*
+BOOL True|False
 VARIABLE [a-z_A-Z][a-zA-Z_0-9]*
 SPACE [ \t\r]*
 EOL \n
@@ -44,7 +45,7 @@ CONSTANT tf.constant
 AERROR .
 MASS [.]*
 %%
-{ASSIGNOP} {return ASSIGNOP;}
+{ASSIGNOP} {yylval.str = "=";return ASSIGNOP;}
 {EOL} {}
 {FLOAT} {printf("get float:%s\n",yytext);
         yylval.str = malloc(sizeof(char*) * strlen(yytext));
@@ -54,6 +55,10 @@ MASS [.]*
             yylval.str = malloc(sizeof(char*) * strlen(yytext));
             strcpy(yylval.str,yytext);
             return VARIABLE;}
+True|False {printf("get bool:%s\n",yytext);
+            yylval.str = malloc(sizeof(char*) * strlen(yytext));
+            strcpy(yylval.str,yytext);
+            return BOOL;}
 {MATMUL} {yylval.str = "matmul";return MATMUL;}
 {CONSTANT} {yylval.str = "constant";return CONSTANT;}
 {LP} {yylval.str = "(";return LP;}
