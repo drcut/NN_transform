@@ -51,6 +51,10 @@ MASS [.]*
         yylval.str = malloc(sizeof(char*) * strlen(yytext));
         strcpy(yylval.str,yytext);
         return FLOAT;}
+{INTEGER} {printf("get integer:%s\n",yytext);
+        yylval.str = malloc(sizeof(char*) * strlen(yytext));
+        strcpy(yylval.str,yytext);
+        return INTEGER;}
 {VARIABLE} {printf("get variable:%s\n",yytext);
             yylval.str = malloc(sizeof(char*) * strlen(yytext));
             strcpy(yylval.str,yytext);
