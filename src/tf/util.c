@@ -46,10 +46,8 @@ char* concat_str(int num,...)
     unsigned int total_size = 1; // for '\0'
     for( i = 0;i<num;i++)
         total_size += strlen(va_arg(tmp_list,const char*));
-    printf("total size=%u\n",total_size);
     va_end(tmp_list);
     va_start(valist,num);
-    //TODO:remove constant number
     char* res = malloc(total_size * sizeof(char));
     for(i = 0;i<num;i++)
     {
@@ -89,7 +87,9 @@ struct node* get_node(char* variable_name)
     if(i==tail)
     {
         fprintf(stderr,"Don't have name %s\n",variable_name);
-        return NULL;
+        struct node* res = new_node("init",0);
+        res->node_name = variable_name;
+        return res;
     }
     return node_list[i]; 
 }
