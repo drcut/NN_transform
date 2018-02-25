@@ -28,7 +28,7 @@
 Program:ExtDefList{$$ = "program";};
 ExtDefList:ExtDef ExtDefList | {$$="extdeflist";};
 Number: FLOAT | INTEGER {$$=$1;};
-ExtDef:VARIABLE ASSIGNOP EXPRESSION{$$ = $1;$3->node_name = $1;add_node($1,$3);printf("travel\n");travel_node($3);}|
+ExtDef:VARIABLE ASSIGNOP EXPRESSION{$$ = $1;$3->node_name = $1;add_node($1,$3);if(!strcmp("conv1",$1)){printf("travel\n");travel_node($3);}}|
        VARIABLE ASSIGNOP Number  {$$ = $1;};
 EXPRESSION:
     VARIABLE {$$ = get_node($1);}|

@@ -12,6 +12,7 @@ struct node
     int input_cnt;
     struct node** input;
     char* attrs;
+    int pid;
 };
 struct node* new_node(char* node_op_name,int num,...);
 

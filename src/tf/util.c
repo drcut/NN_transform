@@ -13,6 +13,13 @@ char* name_list[MAXN];
 int id_list[MAXN];
 struct node* node_list[MAXN];
 int tail = 0;
+int edge_num = 0;
+int node_num = 0;
+int edge_start[MAXN];
+int edge_end[MAXN];
+int visit[MAXN];
+char* node_name[MAXN];
+char* node_attr[MAXN];
 struct node* new_node(char* node_op_name,int num,...)//construct node of NN DAG
 {
     struct node* tmp = (struct node*)malloc(sizeof(struct node));
@@ -21,20 +28,54 @@ struct node* new_node(char* node_op_name,int num,...)//construct node of NN DAG
     tmp->op_name = node_op_name;
     tmp->input_cnt = num;
     tmp->input = malloc(num * sizeof(struct node*));
+    tmp->pid = -1;//use to dfs
     int i;
     for(i = 0;i<num;i++)
         tmp->input[i] = va_arg(valist, struct node*);
     va_end(valist);
     return tmp;
 }
+void dfs(struct node* root)
+{
+    if(root->pid!=-1 && visit[root->pid])return;//already visited
+    root->pid = node_num++;
+    visit[root->pid] = 1;
+    node_name[root->pid] = root->node_name;
+    node_attr[root->pid] = root->attrs==NULL?"NULL":root->attrs;
+    int i = 0;
+    for(i = 0;i<root->input_cnt;i++)
+    {
+        root->input[i]->pid = node_num++;
+        edge_start[edge_num] = root->pid;
+        edge_start[edge_num] = root->input[i]->pid;
+        edge_num++;
+    }
+    for(i = 0;i<root->input_cnt;i++)
+        dfs(root->input[i]);
+}
 void travel_node(struct node* start)
 {
+    edge_num = node_num = 0;
+    memset(visit,0,sizeof(visit));
+    /*
     printf("name=%s\n",start->node_name);
     printf("op name=%s\nattrs=%s\n",start->op_name,start->attrs);
     printf("son_num=%d\n",start->input_cnt);
+    */
+    dfs(start);
+    FILE* fp;
+    if((fp=fopen("net_file.txt","w"))==NULL)
+    {
+        printf("can not open file\n");
+        return;
+    }
+    fprintf(fp,"%d %d\n",node_num,edge_num);
     int i;
-    for(i = 0;i<start->input_cnt;i++)
-        travel_node(start->input[i]);
+    for(i = 0;i<node_num;i++)
+        fprintf(fp,"%s\n%s\n",node_name[i],node_attr[i]);
+    for(i = 0;i<edge_num;i++)
+        fprintf(fp,"%d %d\n",edge_start[i],edge_end[i]);
+    fclose(fp);
     return;
 }
 char* concat_str(int num,...)
