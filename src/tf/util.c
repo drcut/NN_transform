@@ -37,16 +37,16 @@ struct node* new_node(char* node_op_name,int num,...)//construct node of NN DAG
 }
 void dfs(struct node* root)
 {
-    if(root->pid!=-1 && visit[root->pid])return;//already visited
-    root->pid = node_num++;
+    if(visit[root->pid])return;//already visited
     visit[root->pid] = 1;
     node_name[root->pid] = root->node_name;
-    node_attr[root->pid] = root->attrs==NULL?"NULL":root->attrs;
+    node_attr[root->pid] = root->attrs;
     int i = 0;
     for(i = 0;i<root->input_cnt;i++)
     {
-        root->input[i]->pid = node_num++;
-        edge_start[edge_num] = root->pid;
+        if(root->input[i]->pid == -1)
+            root->input[i]->pid = node_num++;
+        edge_end[edge_num] = root->pid;
         edge_start[edge_num] = root->input[i]->pid;
         edge_num++;
     }
@@ -57,11 +57,16 @@ void travel_node(struct node* start)
 {
     edge_num = node_num = 0;
     memset(visit,0,sizeof(visit));
-    /*
+    int i;
+    /* 
     printf("name=%s\n",start->node_name);
     printf("op name=%s\nattrs=%s\n",start->op_name,start->attrs);
     printf("son_num=%d\n",start->input_cnt);
+    
+    for(i = 0;i<start->input_cnt;i++)
+        travel_node(start->input[i]);
     */
+    start->pid = node_num++; 
     dfs(start);
     FILE* fp;
     if((fp=fopen("net_file.txt","w"))==NULL)
@@ -70,13 +75,13 @@ void travel_node(struct node* start)
         return;
     }
     fprintf(fp,"%d %d\n",node_num,edge_num);
-    int i;
     for(i = 0;i<node_num;i++)
         fprintf(fp,"%s\n%s\n",node_name[i],node_attr[i]);
     for(i = 0;i<edge_num;i++)
         fprintf(fp,"%d %d\n",edge_start[i],edge_end[i]);
     fclose(fp);
     return;
+    
 }
 char* concat_str(int num,...)
 {
