@@ -20,6 +20,7 @@ int edge_end[MAXN];
 int visit[MAXN];
 char* node_name[MAXN];
 char* node_attr[MAXN];
+char* node_op[MAXN];
 struct node* new_node(char* node_op_name,int num,...)//construct node of NN DAG
 {
     struct node* tmp = (struct node*)malloc(sizeof(struct node));
@@ -41,6 +42,7 @@ void dfs(struct node* root)
     visit[root->pid] = 1;
     node_name[root->pid] = root->node_name;
     node_attr[root->pid] = root->attrs;
+    node_op[root->pid] = root->op_name;
     int i = 0;
     for(i = 0;i<root->input_cnt;i++)
     {
@@ -76,7 +78,7 @@ void travel_node(struct node* start)
     }
     fprintf(fp,"%d %d\n",node_num,edge_num);
     for(i = 0;i<node_num;i++)
-        fprintf(fp,"%s\n%s\n",node_name[i],node_attr[i]);
+        fprintf(fp,"%s\n%s\n%s\n",node_name[i],node_op[i],node_attr[i]);
     for(i = 0;i<edge_num;i++)
         fprintf(fp,"%d %d\n",edge_start[i],edge_end[i]);
     fclose(fp);
