@@ -18,8 +18,10 @@ ELSE else
 WHILE while
 PLUS \+
 MINUS -
-INTEGER -?[1-9]+[0-9]*|0
-FLOAT   -?[0-9]+\.[0-9]*
+MUL \*
+DIV \/
+INTEGER [1-9]+[0-9]*|0
+FLOAT   [0-9]+\.[0-9]*
 BOOL True|False
 SPACE [ \t\r]*
 EOL \n
@@ -28,8 +30,6 @@ COMMA ,
 WELL #
 ASSIGNOP =
 RELOP >|<|>=|<=|==|!=
-STAR \*
-DIV \/
 AND &&
 OR \|\|
 DOT \.
@@ -43,12 +43,15 @@ RC \}
 MATMUL tf\.matmul
 CONSTANT tf\.constant
 RESHAPE tf\.reshape
+MAX_POOL tf\.nn\.max_pool
 DTYPE tf\.float32
 PLACEHOLDER tf\.placeholder
 RELU tf\.nn\.relu
 BIAS_ADD tf\.nn\.bias_add
 CONV2D tf\.nn\.conv2d
 TFVARIABLE tf\.Variable
+LRN tf\.nn\.lrn
+DROPOUT tf\.nn\.dropout
 RANDOM_NORMAL tf\.random_normal
 VARIABLE [a-z_A-Z][a-zA-Z_0-9]*
 STRING [\'\"][a-zA-Z_0-9]*[\'\"]
@@ -78,11 +81,18 @@ True|False {printf("get bool:%s\n",yytext);
             yylval.str = malloc(sizeof(char*) * strlen(yytext));
             strcpy(yylval.str,yytext);
             return BOOL;}
+{PLUS} {yylval.str = "+";return PLUS;}
+{MINUS} {yylval.str = "-";return MINUS;}
+{MUL} {yylval.str = "*";return MUL;}
+{DIV} {yylval.str = "//";return DIV;}
 {NONE} {yylval.str = "None";return NONE;}
 {PLACEHOLDER} {yylval.str = "placeholder";return PLACEHOLDER;}
 {MATMUL} {yylval.str = "matmul";return MATMUL;}
 {CONSTANT} {yylval.str = "constant";return CONSTANT;}
 {RESHAPE} {yylval.str = "reshape";return RESHAPE;}
+{MAX_POOL} {return MAX_POOL;}
+{LRN} {return LRN;}
+{DROPOUT} {return DROPOUT;}
 {LP} {yylval.str = "(";return LP;}
 {RP} {yylval.str = ")";return RP;}
 {LB} {yylval.str = "[";return LB;}

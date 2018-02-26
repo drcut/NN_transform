@@ -14,10 +14,10 @@
     struct node *p;
 }
 
-%token <str> LP RP LB RB COMMA FLOAT WELL SPACE EOL BOOL INTEGER NONE STRING
-%token <str> VARIABLE MATMUL CONSTANT MASS ASSIGNOP PLACEHOLDER DTYPE RESHAPE RELU BIAS_ADD CONV2D TFVARIABLE RANDOM_NORMAL
+%token <str> LP RP LB RB COMMA FLOAT WELL SPACE EOL BOOL INTEGER NONE STRING PLUS MINUS MUL DIV
+%token <str> VARIABLE MATMUL CONSTANT MASS ASSIGNOP PLACEHOLDER DTYPE RESHAPE RELU BIAS_ADD CONV2D TFVARIABLE RANDOM_NORMAL MAX_POOL LRN DROPOUT
 %type <str> Program ExtDef ExtDefList List Serial Serial_Element  KWARG_LIST
-%type <str> Number
+%type <str> Number NormalOP
 %type <p> EXPRESSION
 
 /*priority*/
@@ -27,8 +27,10 @@
 
 Program:ExtDefList{$$ = "program";};
 ExtDefList:ExtDef ExtDefList | {$$="extdeflist";};
-Number: FLOAT | INTEGER {$$=$1;};
-ExtDef:VARIABLE ASSIGNOP EXPRESSION{$$ = $1;$3->node_name = $1;add_node($1,$3);if(!strcmp("conv1",$1)){printf("travel\n");travel_node($3);}}|
+NormalOP: PLUS | MINUS | MUL |DIV {$$ = $1;};
+Number: MINUS Number {$$=concat_str(2,"-",$1);}|
+        FLOAT | INTEGER {$$=$1;} |  Number NormalOP Number {$$ = concat_str(3,$1,$2,$3);};
+ExtDef:VARIABLE ASSIGNOP EXPRESSION{$$ = $1;$3->node_name = $1;add_node($1,$3);if(!strcmp("pred",$1)){printf("travel\n");travel_node($3);}}|
        VARIABLE ASSIGNOP Number  {$$ = $1;};
 EXPRESSION:
     VARIABLE {$$ = get_node($1);}|
@@ -36,11 +38,15 @@ EXPRESSION:
     CONSTANT LP List RP{$$ = new_node("constant",0);} |
     RESHAPE LP EXPRESSION KWARG_LIST RP {$$ = new_node("reshape",1,$3);}|
     PLACEHOLDER LP DTYPE KWARG_LIST RP {$$ = new_node("placeholder",0);}|
-    RANDOM_NORMAL LP List KWARG_LIST RP {$$ = new_node("random_normal",0);}|
+    RANDOM_NORMAL LP List KWARG_LIST RP {$$ = new_node("random_normal",0);$$->attrs = $3;}|
     TFVARIABLE LP EXPRESSION KWARG_LIST RP {$$ = new_node("variable",1,$3);}|
     CONV2D LP EXPRESSION COMMA EXPRESSION KWARG_LIST RP {$$ = new_node("conv2d",2,$3,$5);$$->attrs = $6;}|
     BIAS_ADD LP EXPRESSION COMMA EXPRESSION KWARG_LIST RP {$$ = new_node("bias_add",2,$3,$5);}|
-    RELU LP EXPRESSION KWARG_LIST RP {$$ = new_node("relu",1,$3);$$->attrs = $4;};
+    RELU LP EXPRESSION KWARG_LIST RP {$$ = new_node("relu",1,$3);$$->attrs = $4;}|
+    MAX_POOL LP EXPRESSION KWARG_LIST RP {$$ = new_node("max_pool",1,$3);$$->attrs = $4;}|
+    LRN LP EXPRESSION KWARG_LIST RP {$$ = new_node("lrn",1,$3);$$->attrs = $4;}|
+    DROPOUT LP EXPRESSION COMMA EXPRESSION KWARG_LIST RP {$$ = new_node("dropout",2,$3,$5);$$->attrs = $7;}|
+    EXPRESSION NormalOP EXPRESSION {$$ = new_node($2,2,$1,$3);};
 KWARG_LIST: {$$ = "";}|
     COMMA Serial {$$ = $2;};
 Serial :{$$="";}| 
@@ -48,7 +54,7 @@ Serial :{$$="";}|
         Serial_Element {$$ = $1;};
 Serial_Element:Number  | NONE |List {$$ = $1;}|
         VARIABLE ASSIGNOP STRING {$$=concat_str(3,$1,":",$3);}|
-        VARIABLE ASSIGNOP Number |
+        VARIABLE ASSIGNOP Number {$$=concat_str(3,$1,":",$3);}|
         VARIABLE ASSIGNOP List {$$=concat_str(3,$1,":",$3);}|
         EXPRESSION {$$=$1->node_name;};
 /*
