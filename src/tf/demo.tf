@@ -32,3 +32,8 @@ dense1=tf.reshape(drop3,shape=[-1,4*4*256])
 dense1=tf.nn.relu(tf.matmul(dense1,tf.Variable(tf.random_normal([4*4*256,1024]))+tf.Variable(tf.random_normal([1024])),name='fc1'))
 dense2=tf.nn.relu(tf.matmul(dense1,tf.Variable(tf.random_normal([1024,1024]))+tf.Variable(tf.random_normal([1024])),name='fc2'))
 pred=tf.matmul(dense2,tf.Variable(tf.random_normal([1024,10]))+tf.Variable(tf.random_normal([n_classes])))
+
+cost=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred,y))
+
+optimizer=tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+

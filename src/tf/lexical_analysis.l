@@ -17,6 +17,7 @@ IF if
 ELSE else
 WHILE while
 PLUS \+
+MINIMIZE minimize
 MINUS -
 MUL \*
 DIV \/
@@ -53,6 +54,9 @@ TFVARIABLE tf\.Variable
 LRN tf\.nn\.lrn
 DROPOUT tf\.nn\.dropout
 RANDOM_NORMAL tf\.random_normal
+ADAMOPTIMIZER tf\.train\.AdamOptimizer
+SOFTMAX_CROSS_ENTROPY_WITH_LOGITS tf\.nn\.softmax_cross_entropy_with_logits
+REDUCE_MEAN tf\.reduce_mean
 VARIABLE [a-z_A-Z][a-zA-Z_0-9]*
 STRING [\'\"][a-zA-Z_0-9]*[\'\"]
 AERROR .
@@ -85,18 +89,23 @@ True|False {printf("get bool:%s\n",yytext);
 {MINUS} {yylval.str = "-";return MINUS;}
 {MUL} {yylval.str = "*";return MUL;}
 {DIV} {yylval.str = "//";return DIV;}
+{DOT} {return DOT;}
 {NONE} {yylval.str = "None";return NONE;}
 {PLACEHOLDER} {yylval.str = "placeholder";return PLACEHOLDER;}
 {MATMUL} {yylval.str = "matmul";return MATMUL;}
 {CONSTANT} {yylval.str = "constant";return CONSTANT;}
 {RESHAPE} {yylval.str = "reshape";return RESHAPE;}
-{MAX_POOL} {return MAX_POOL;}
-{LRN} {return LRN;}
-{DROPOUT} {return DROPOUT;}
+{MAX_POOL} {yylval.str = "maxpool";return MAX_POOL;}
+{LRN} {yylval.str = "LRN";return LRN;}
+{DROPOUT} {yylval.str = "dropout";return DROPOUT;}
+{ADAMOPTIMIZER} {yylval.str = "adamoptimizer";return ADAMOPTIMIZER;}
+{SOFTMAX_CROSS_ENTROPY_WITH_LOGITS} {yylval.str = "softmax_cross_entropy_with_logits";return SOFTMAX_CROSS_ENTROPY_WITH_LOGITS;}
+{REDUCE_MEAN} {yylval.str = "reduce_mean";return REDUCE_MEAN;}
 {LP} {yylval.str = "(";return LP;}
 {RP} {yylval.str = ")";return RP;}
 {LB} {yylval.str = "[";return LB;}
 {RB} {yylval.str = "]";return RB;}
+{MINIMIZE} {return MINIMIZE;}
 {COMMA} {yylval.str = ",";return COMMA;}
 {WELL} {yylval.str = "#";return WELL;}
 {VARIABLE} {printf("get variable:%s\n",yytext);
