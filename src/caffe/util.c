@@ -38,6 +38,7 @@ struct node* new_node(char* node_op_name,int num,...)//construct node of NN DAG
 }
 void dfs(struct node* root)
 {
+    //printf("dfs %s\n",root->node_name);
     if(visit[root->pid])return;//already visited
     visit[root->pid] = 1;
     node_name[root->pid] = root->node_name;
@@ -60,7 +61,7 @@ void travel_node(struct node* start)
     edge_num = node_num = 0;
     memset(visit,0,sizeof(visit));
     int i;
-    /* 
+   /* 
     printf("name=%s\n",start->node_name);
     printf("op name=%s\nattrs=%s\n",start->op_name,start->attrs);
     printf("son_num=%d\n",start->input_cnt);
@@ -70,6 +71,7 @@ void travel_node(struct node* start)
     */
     start->pid = node_num++; 
     dfs(start);
+    //printf("after dfs\n");
     FILE* fp;
     if((fp=fopen("net_file.txt","w"))==NULL)
     {
@@ -144,6 +146,7 @@ struct node* get_node(char* variable_name)
 
 void add_node(char* node_name,struct node* p)
 {
+    printf("add node %s\n",node_name);
     int i;
     for(i = 0; i<tail;i++)
         if(!strcmp(node_name,name_list[i]))
@@ -156,11 +159,13 @@ void add_node(char* node_name,struct node* p)
 
 void add_input(struct node* p,struct node* input_node)
 {
+    printf("add input\ninit cnt = %d\n",p->input_cnt);
     struct node** new_input = malloc((p->input_cnt + 1) * sizeof(struct node*));
     memcpy(new_input,p->input,p->input_cnt * sizeof(struct node*));
     new_input[p->input_cnt] = input_node;
-    ++p->input_cnt;
+    ++(p->input_cnt);
     p->input = new_input;
+    printf("new cnt = %d\n",p->input_cnt);
 }
 int main()
 {

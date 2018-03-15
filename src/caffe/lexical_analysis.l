@@ -94,6 +94,8 @@ True|False {printf("get bool:%s\n",yytext);
 {STRING} {printf("get string:%s\n",yytext);
             yylval.str = malloc(sizeof(char*) * strlen(yytext));
             strcpy(yylval.str,yytext);
+            yylval.str[strlen(yytext)-1] = '\0';
+            yylval.str++;
             return STRING;}
 {SPACE} {}
 {ATTR_NAME} {printf("get attr name:%s\n",yytext);
