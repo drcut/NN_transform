@@ -10,6 +10,7 @@
 #include "util.h"
 %}
 type int|float
+POOL_ATTR MAX|MIN
 NONE None
 PLUS \+
 MINUS -
@@ -63,6 +64,10 @@ MASS [^\{\}]+
         yylval.str = malloc(sizeof(char*) * strlen(yytext));
         strcpy(yylval.str,yytext);
         return INTEGER;}
+{POOL_ATTR} {printf("get pool direction:%s\n",yytext);
+            yylval.str = malloc(sizeof(char*) * strlen(yytext));
+            strcpy(yylval.str,yytext);
+            return POOL_ATTR;}
 True|False {printf("get bool:%s\n",yytext);
             yylval.str = malloc(sizeof(char*) * strlen(yytext));
             strcpy(yylval.str,yytext);
