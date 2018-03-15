@@ -41,7 +41,7 @@ AttrDef:
     TOP SEMICOLON STRING {add_node($3,tmp_node);}|
     BOTTOM SEMICOLON STRING {printf("add input %s\n",$3);add_input(tmp_node,get_node($3));}|
     PARAM LC PARAM_ATTRS RC {tmp_node->attrs = $3;};
-PARAM_ATTRS: {$$="";}|PARAM_ATTR PARAM_ATTRS{$$ = concat_str(3,$1,",",$2);};
+PARAM_ATTRS: PARAM_ATTR{$$=$1;}|PARAM_ATTR PARAM_ATTRS{$$ = concat_str(3,$1,",",$2);};
 PARAM_ATTR: ATTR_NAME SEMICOLON LC DIM_LIST RC {$$ = concat_str(3,$1,":",$4);}|
             ATTR_NAME SEMICOLON PARAM_ATTR_VAL {$$ = concat_str(3,$1,":",$3);};
 PARAM_ATTR_VAL:
