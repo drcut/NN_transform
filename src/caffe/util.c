@@ -153,6 +153,15 @@ void add_node(char* node_name,struct node* p)
     node_list[i] = p;
     name_list[i] = node_name;
 }
+
+void add_input(struct node* p,struct node* input_node)
+{
+    struct node** new_input = malloc((p->input_cnt + 1) * sizeof(struct node*));
+    memcpy(new_input,p->input,p->input_cnt * sizeof(struct node*));
+    new_input[p->input_cnt] = input_node;
+    ++p->input_cnt;
+    p->input = new_input;
+}
 int main()
 {
     return yyparse();

@@ -42,8 +42,9 @@ TYPE type
 TOP top
 BOTTOM bottom
 LAYER layer
+DIM dim
+ATTR_NAME [a-zA-Z_]+
 STRING [\'\"][a-zA-Z_0-9]*[\'\"]
-AERROR .
 MASS [^\{\}]+
 %%
 {ASSIGNOP} {return ASSIGNOP;}
@@ -78,15 +79,22 @@ True|False {printf("get bool:%s\n",yytext);
 {RB} {yylval.str = "]";return RB;}
 {LC} {return LC;}
 {RC} {return RC;}
+{DIM} {return DIM;}
 {COMMA} {yylval.str = ",";return COMMA;}
 {WELL} {yylval.str = "#";return WELL;}
+{PARAM} {printf("get param:%s\n",yytext);
+            yylval.str = malloc(sizeof(char*) * strlen(yytext));
+            strcpy(yylval.str,yytext);
+            return PARAM;}
 {STRING} {printf("get string:%s\n",yytext);
             yylval.str = malloc(sizeof(char*) * strlen(yytext));
             strcpy(yylval.str,yytext);
-            /*yylval.str[strlen(yytext)-1] = '\0';
-            ++yylval.str;*/
             return STRING;}
 {SPACE} {}
+{ATTR_NAME} {printf("get attr name:%s\n",yytext);
+            yylval.str = malloc(sizeof(char*) * strlen(yytext));
+            strcpy(yylval.str,yytext);
+            return ATTR_NAME;}
 %%
 int yywrap()
 {
