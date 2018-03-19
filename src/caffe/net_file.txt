@@ -1,0 +1,96 @@
+24 23
+prob
+Softmax
+(null)
+fc8
+InnerProduct
+num_output:1000
+drop7
+Dropout
+dropout_ratio:0.5
+relu7
+ReLU
+(null)
+fc7
+InnerProduct
+num_output:4096
+drop6
+Dropout
+dropout_ratio:0.5
+relu6
+ReLU
+(null)
+fc6
+InnerProduct
+num_output:4096
+pool5
+Pooling
+pool:MAX,kernel_size:3,stride:2
+relu5
+ReLU
+(null)
+conv5
+Convolution
+num_output:256,pad:1,kernel_size:3,group:2
+relu4
+ReLU
+(null)
+conv4
+Convolution
+num_output:384,pad:1,kernel_size:3,group:2
+relu3
+ReLU
+(null)
+conv3
+Convolution
+num_output:384,pad:1,kernel_size:3
+norm2
+LRN
+local_size:5,alpha:0.0001,beta:0.75
+pool2
+Pooling
+pool:MAX,kernel_size:3,stride:2
+relu2
+ReLU
+(null)
+conv2
+Convolution
+num_output:256,pad:2,kernel_size:5,group:2
+norm1
+LRN
+local_size:5,alpha:0.0001,beta:0.75
+pool1
+Pooling
+pool:MAX,kernel_size:3,stride:2
+relu1
+ReLU
+(null)
+conv1
+Convolution
+num_output:96,kernel_size:11,stride:4
+data
+Input
+shape:10,3,227,227,
+1 0
+2 1
+3 2
+4 3
+5 4
+6 5
+7 6
+8 7
+9 8
+10 9
+11 10
+12 11
+13 12
+14 13
+15 14
+16 15
+17 16
+18 17
+19 18
+20 19
+21 20
+22 21
+23 22
