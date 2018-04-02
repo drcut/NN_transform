@@ -15,12 +15,21 @@ struct node* node_list[MAXN];
 int tail = 0;
 int edge_num = 0;
 int node_num = 0;
+int tmp_cnt = 0;
 int edge_start[MAXN];
 int edge_end[MAXN];
 int visit[MAXN];
 char* node_name[MAXN];
 char* node_attr[MAXN];
 char* node_op[MAXN];
+char* concat_str(int num,...);
+char* itoa(int nValue)
+{
+    char* szBuffer = (char *)malloc(sizeof(int) + 1);
+    memset(szBuffer, 0, sizeof(int) + 1);
+    sprintf(szBuffer, "%d", nValue);
+    return szBuffer;
+}
 struct node* new_node(char* node_op_name,int num,...)//construct node of NN DAG
 {
     struct node* tmp = (struct node*)malloc(sizeof(struct node));
@@ -40,7 +49,10 @@ void dfs(struct node* root)
 {
     if(visit[root->pid])return;//already visited
     visit[root->pid] = 1;
-    node_name[root->pid] = root->node_name;
+    if(root->node_name)
+        node_name[root->pid] = root->node_name;
+    else
+        node_name[root->pid] = concat_str(2,"tmp_",itoa(tmp_cnt++)); 
     node_attr[root->pid] = root->attrs;
     node_op[root->pid] = root->op_name;
     int i = 0;
@@ -58,6 +70,7 @@ void dfs(struct node* root)
 void travel_node(struct node* start)
 {
     edge_num = node_num = 0;
+    tmp_cnt = 0;
     memset(visit,0,sizeof(visit));
     int i;
     /* 
@@ -152,6 +165,16 @@ void add_node(char* node_name,struct node* p)
         tail++;
     node_list[i] = p;
     name_list[i] = node_name;
+}
+void add_input(struct node* p,struct node* input_node)
+{
+        printf("add input\ninit cnt = %d\n",p->input_cnt);
+        struct node** new_input = malloc((p->input_cnt + 1) * sizeof(struct node*));
+        memcpy(new_input,p->input,p->input_cnt * sizeof(struct node*));
+        new_input[p->input_cnt] = input_node;
+        ++(p->input_cnt);
+        p->input = new_input;
+        printf("new cnt = %d\n",p->input_cnt);
 }
 int main()
 {

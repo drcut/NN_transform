@@ -41,6 +41,7 @@ LB \[
 RB \]
 LC \{
 RC \}
+UNSTACK tf\.unstack
 MATMUL tf\.matmul
 CONSTANT tf\.constant
 RESHAPE tf\.reshape
@@ -50,16 +51,21 @@ PLACEHOLDER tf\.placeholder
 RELU tf\.nn\.relu
 BIAS_ADD tf\.nn\.bias_add
 CONV2D tf\.nn\.conv2d
+SOFTMAX tf\.nn\.softmax
 TFVARIABLE tf\.Variable
 LRN tf\.nn\.lrn
 DROPOUT tf\.nn\.dropout
 RANDOM_NORMAL tf\.random_normal
 ADAMOPTIMIZER tf\.train\.AdamOptimizer
+GDOPTIMIZER tf\.train\.GradientDescentOptimizer
 SOFTMAX_CROSS_ENTROPY_WITH_LOGITS tf\.nn\.softmax_cross_entropy_with_logits
 REDUCE_MEAN tf\.reduce_mean
+BASICLSTMCELL tf\.contrib\.rnn\.BasicLSTMCell
+STATIC_RNN tf\.nn\.static_rnn
 VARIABLE [a-z_A-Z][a-zA-Z_0-9]*
 STRING [\'\"][a-zA-Z_0-9]*[\'\"]
 AERROR .
+COMMENT #[^\n]*\n
 MASS [.]*
 %%
 {ASSIGNOP} {return ASSIGNOP;}
@@ -92,6 +98,7 @@ True|False {printf("get bool:%s\n",yytext);
 {DOT} {return DOT;}
 {NONE} {yylval.str = "None";return NONE;}
 {PLACEHOLDER} {yylval.str = "placeholder";return PLACEHOLDER;}
+{UNSTACK} {yylval.str ="unstack";return UNSTACK;}
 {MATMUL} {yylval.str = "matmul";return MATMUL;}
 {CONSTANT} {yylval.str = "constant";return CONSTANT;}
 {RESHAPE} {yylval.str = "reshape";return RESHAPE;}
@@ -99,8 +106,12 @@ True|False {printf("get bool:%s\n",yytext);
 {LRN} {yylval.str = "LRN";return LRN;}
 {DROPOUT} {yylval.str = "dropout";return DROPOUT;}
 {ADAMOPTIMIZER} {yylval.str = "adamoptimizer";return ADAMOPTIMIZER;}
+{GDOPTIMIZER} {yylval.str ="gdoptimizer";return GDOPTIMIZER;}
 {SOFTMAX_CROSS_ENTROPY_WITH_LOGITS} {yylval.str = "softmax_cross_entropy_with_logits";return SOFTMAX_CROSS_ENTROPY_WITH_LOGITS;}
 {REDUCE_MEAN} {yylval.str = "reduce_mean";return REDUCE_MEAN;}
+{BASICLSTMCELL} {yylval.str = "basicLSTMcell";return BASICLSTMCELL;}
+{STATIC_RNN} {yylval.str = "static_rnn";return STATIC_RNN;}
+{SOFTMAX} {yylval.str = "softmax";return SOFTMAX;}
 {LP} {yylval.str = "(";return LP;}
 {RP} {yylval.str = ")";return RP;}
 {LB} {yylval.str = "[";return LB;}
@@ -108,6 +119,10 @@ True|False {printf("get bool:%s\n",yytext);
 {MINIMIZE} {return MINIMIZE;}
 {COMMA} {yylval.str = ",";return COMMA;}
 {WELL} {yylval.str = "#";return WELL;}
+{COMMENT} {printf("get comment:%s\n",yytext);
+            yylval.str = malloc(sizeof(char*) * strlen(yytext));
+            strcpy(yylval.str,yytext);
+            return COMMENT;}
 {VARIABLE} {printf("get variable:%s\n",yytext);
             yylval.str = malloc(sizeof(char*) * strlen(yytext));
             strcpy(yylval.str,yytext);
