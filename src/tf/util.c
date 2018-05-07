@@ -73,7 +73,7 @@ void travel_node(struct node* start)
     tmp_cnt = 0;
     memset(visit,0,sizeof(visit));
     int i;
-    /* 
+    /*
     printf("name=%s\n",start->node_name);
     printf("op name=%s\nattrs=%s\n",start->op_name,start->attrs);
     printf("son_num=%d\n",start->input_cnt);

@@ -1,7 +1,7 @@
 /*
 *Author:HanRuobing
 *Created on:2018-02-09
-*Descroption:Semantic analysis for tensorflow.
+*Descroption:Semantic analysis for caffe.
 */
 %{
 #include<unistd.h>

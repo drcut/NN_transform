@@ -31,7 +31,7 @@ ExtDefList:ExtDef ExtDefList | {$$="extdeflist";};
 NormalOP: PLUS | MINUS | MUL |DIV {$$ = $1;};
 Number: MINUS Number {$$=concat_str(2,"-",$2);}|
         FLOAT | INTEGER {$$=$1;} |  Number NormalOP Number {$$ = concat_str(3,$1,$2,$3);};
-ExtDef:VARIABLE ASSIGNOP EXPRESSION{$$ = $1;$3->node_name = $1;add_node($1,$3);if(!strcmp("loss_op",$1)){printf("travel\n");travel_node($3);}}|
+ExtDef:VARIABLE ASSIGNOP EXPRESSION{$$ = $1;$3->node_name = $1;add_node($1,$3);if(!strcmp("cost",$1)){printf("travel\n");travel_node($3);}}|
        VARIABLE COMMA VARIABLE ASSIGNOP EXPRESSION {$$=$1;$5->node_name = concat_str(3,$1,":",$3);add_node($1,$5);add_node($3,$5);}|
        VARIABLE ASSIGNOP Number  {$$ = $1;}|
        COMMENT;
@@ -55,7 +55,7 @@ EXPRESSION:
     Optimizer DOT MINIMIZE LP EXPRESSION RP {$$ = new_node("optimize",1,$5);$$->attrs = $1;}|
     Optimizer {$$=new_node("optimizer",0);$$->attrs = $1;}|
     VARIABLE DOT MINIMIZE LP EXPRESSION RP {$$=new_node("optimize",2,get_node($1),$5);}|
-    SOFTMAX_CROSS_ENTROPY_WITH_LOGITS LP {tmp_node = new_node("softmax_cross_entropy_with_logits",0);}Serial RP {$$=tmp_node;$$->attrs = $1;tmp_node=NULL;}|
+    SOFTMAX_CROSS_ENTROPY_WITH_LOGITS LP EXPRESSION COMMA EXPRESSION {tmp_node = new_node("softmax_cross_entropy_with_logits",2,$3,$5);}KWARG_LIST RP {$$=tmp_node;$$->attrs = $7;tmp_node=NULL;}|
     REDUCE_MEAN LP EXPRESSION RP {$$=new_node("reduce_mean",1,$3);}|
     UNSTACK LP EXPRESSION {tmp_node=new_node("unstack",1,$3);}KWARG_LIST RP {$$=tmp_node;$$->attrs = $5;tmp_node=NULL;}|
     BASICLSTMCELL LP Serial RP {$$=new_node("basicLSTMcell",0);$$->attrs = $3;}|
