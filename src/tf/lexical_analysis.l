@@ -26,6 +26,7 @@ FLOAT   [0-9]+\.[0-9]*
 BOOL True|False
 SPACE [ \t\r]*
 EOL \n
+COLON :
 SEMI ;
 COMMA ,
 WELL #
@@ -41,6 +42,9 @@ LB \[
 RB \]
 LC \{
 RC \}
+WITH with
+NAMESCOPE tf\.name_scope
+ZEROS tf\.zeros
 UNSTACK tf\.unstack
 MATMUL tf\.matmul
 CONSTANT tf\.constant
@@ -56,9 +60,11 @@ TFVARIABLE tf\.Variable
 LRN tf\.nn\.lrn
 DROPOUT tf\.nn\.dropout
 RANDOM_NORMAL tf\.random_normal
+TRUNCATED_NORMAL tf\.truncated_normal
 ADAMOPTIMIZER tf\.train\.AdamOptimizer
 GDOPTIMIZER tf\.train\.GradientDescentOptimizer
 SOFTMAX_CROSS_ENTROPY_WITH_LOGITS tf\.nn\.softmax_cross_entropy_with_logits
+SPARSE_SOFTMAX_CROSS_ENTROPY tf\.losses\.sparse_softmax_cross_entropy
 REDUCE_MEAN tf\.reduce_mean
 BASICLSTMCELL tf\.contrib\.rnn\.BasicLSTMCell
 STATIC_RNN tf\.nn\.static_rnn
@@ -74,7 +80,10 @@ MASS [.]*
 {BIAS_ADD} {return BIAS_ADD;}
 {CONV2D} {return CONV2D;}
 {TFVARIABLE} {return TFVARIABLE;}
-{RANDOM_NORMAL} {return RANDOM_NORMAL;}
+{RANDOM_NORMAL} {printf("get random normal");return RANDOM_NORMAL;}
+{TRUNCATED_NORMAL} {return TRUNCATED_NORMAL;}
+{WITH} {return WITH;}
+{NAMESCOPE} {return NAMESCOPE;}
 {FLOAT} {printf("get float:%s\n",yytext);
         yylval.str = malloc(sizeof(char*) * strlen(yytext));
         strcpy(yylval.str,yytext);
@@ -96,6 +105,7 @@ True|False {printf("get bool:%s\n",yytext);
 {MUL} {yylval.str = "*";return MUL;}
 {DIV} {yylval.str = "//";return DIV;}
 {DOT} {return DOT;}
+{COLON} {return COLON;}
 {NONE} {yylval.str = "None";return NONE;}
 {PLACEHOLDER} {yylval.str = "placeholder";return PLACEHOLDER;}
 {UNSTACK} {yylval.str ="unstack";return UNSTACK;}
@@ -112,6 +122,8 @@ True|False {printf("get bool:%s\n",yytext);
 {BASICLSTMCELL} {yylval.str = "basicLSTMcell";return BASICLSTMCELL;}
 {STATIC_RNN} {yylval.str = "static_rnn";return STATIC_RNN;}
 {SOFTMAX} {yylval.str = "softmax";return SOFTMAX;}
+{SPARSE_SOFTMAX_CROSS_ENTROPY} {yylval.str = "sparse_softmax_cross_entropy";return SPARSE_SOFTMAX_CROSS_ENTROPY;}
+{ZEROS} {yylval.str = "zeros";return ZEROS;}
 {LP} {yylval.str = "(";return LP;}
 {RP} {yylval.str = ")";return RP;}
 {LB} {yylval.str = "[";return LB;}

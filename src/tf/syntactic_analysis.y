@@ -15,8 +15,8 @@ struct node* tmp_node = NULL;
     struct node *p;
 }
 
-%token <str> LP RP LB RB COMMA FLOAT WELL SPACE EOL BOOL INTEGER NONE STRING PLUS MINUS MUL DIV DOT
-%token <str> VARIABLE MATMUL CONSTANT MASS ASSIGNOP PLACEHOLDER DTYPE RESHAPE RELU BIAS_ADD CONV2D TFVARIABLE RANDOM_NORMAL MAX_POOL LRN DROPOUT ADAMOPTIMIZER MINIMIZE SOFTMAX_CROSS_ENTROPY_WITH_LOGITS REDUCE_MEAN COMMENT UNSTACK BASICLSTMCELL STATIC_RNN SOFTMAX GDOPTIMIZER
+%token <str> LP RP LB RB COMMA FLOAT WELL SPACE EOL BOOL INTEGER NONE STRING PLUS MINUS MUL DIV DOT WITH NAMESCOPE COLON
+%token <str> VARIABLE MATMUL CONSTANT MASS ASSIGNOP PLACEHOLDER DTYPE RESHAPE RELU BIAS_ADD CONV2D TFVARIABLE RANDOM_NORMAL MAX_POOL LRN DROPOUT ADAMOPTIMIZER MINIMIZE SOFTMAX_CROSS_ENTROPY_WITH_LOGITS REDUCE_MEAN COMMENT UNSTACK BASICLSTMCELL STATIC_RNN SOFTMAX GDOPTIMIZER TRUNCATED_NORMAL ZEROS SPARSE_SOFTMAX_CROSS_ENTROPY
 %type <str> Program ExtDef ExtDefList List Serial Serial_Element KWARG_LIST Index
 %type <str> Number NormalOP Optimizer
 %type <p> EXPRESSION
@@ -31,10 +31,11 @@ ExtDefList:ExtDef ExtDefList | {$$="extdeflist";};
 NormalOP: PLUS | MINUS | MUL |DIV {$$ = $1;};
 Number: MINUS Number {$$=concat_str(2,"-",$2);}|
         FLOAT | INTEGER {$$=$1;} |  Number NormalOP Number {$$ = concat_str(3,$1,$2,$3);};
-ExtDef:VARIABLE ASSIGNOP EXPRESSION{$$ = $1;$3->node_name = $1;add_node($1,$3);if(!strcmp("cost",$1)){printf("travel\n");travel_node($3);}}|
+ExtDef:VARIABLE ASSIGNOP EXPRESSION{$$ = $1;$3->node_name = $1;add_node($1,$3);if(!strcmp("loss",$1)){printf("travel\n");travel_node($3);}}|
        VARIABLE COMMA VARIABLE ASSIGNOP EXPRESSION {$$=$1;$5->node_name = concat_str(3,$1,":",$3);add_node($1,$5);add_node($3,$5);}|
        VARIABLE ASSIGNOP Number  {$$ = $1;}|
-       COMMENT;
+       COMMENT |
+       WITH NAMESCOPE LP STRING RP COLON;
 Index: LB Number RB {$$=concat_str(3,$1,$2,$3);}| Index LB Number RB {$$ = concat_str(4,$1,$2,$3,$4);};
 EXPRESSION:
     VARIABLE {$$ = get_node($1);}|
@@ -44,6 +45,8 @@ EXPRESSION:
     RESHAPE LP EXPRESSION {tmp_node = new_node("reshape",1,$3);} KWARG_LIST RP {$$ = tmp_node;$$->attrs = $5;tmp_node=NULL;}|
     PLACEHOLDER LP DTYPE {tmp_node = new_node("placeholder",0);}KWARG_LIST RP {$$ = tmp_node;$$->attrs = $5;tmp_node=NULL;}|
     RANDOM_NORMAL LP List {tmp_node = new_node("random_normal",0);}KWARG_LIST RP {$$=tmp_node;$$->attrs = concat_str(2,$3,$5);}|
+    TRUNCATED_NORMAL LP List {tmp_node = new_node("truncated_normal",0);} KWARG_LIST RP {$$=tmp_node;$$->attrs = concat_str(2,$3,$5);}|
+    ZEROS LP List {tmp_node = new_node("zeros",0);} KWARG_LIST RP {$$=tmp_node;$$->attrs = concat_str(2,$3,$5);}|
     TFVARIABLE LP EXPRESSION {tmp_node = new_node("variable",1,$3);}KWARG_LIST RP {$$=tmp_node;$$->attrs = $5;tmp_node=NULL;}|
     CONV2D LP EXPRESSION COMMA EXPRESSION {tmp_node = new_node("conv2d",2,$3,$5);}KWARG_LIST RP {$$ = tmp_node;$$->attrs = $7;tmp_node=NULL;}|
     BIAS_ADD LP EXPRESSION COMMA EXPRESSION {tmp_node = new_node("bias_add",2,$3,$5);}KWARG_LIST RP {$$ = tmp_node;$$->attrs=$7;tmp_node=NULL;}|
@@ -56,6 +59,7 @@ EXPRESSION:
     Optimizer {$$=new_node("optimizer",0);$$->attrs = $1;}|
     VARIABLE DOT MINIMIZE LP EXPRESSION RP {$$=new_node("optimize",2,get_node($1),$5);}|
     SOFTMAX_CROSS_ENTROPY_WITH_LOGITS LP EXPRESSION COMMA EXPRESSION {tmp_node = new_node("softmax_cross_entropy_with_logits",2,$3,$5);}KWARG_LIST RP {$$=tmp_node;$$->attrs = $7;tmp_node=NULL;}|
+    SPARSE_SOFTMAX_CROSS_ENTROPY LP EXPRESSION COMMA EXPRESSION {tmp_node = new_node("sparse_softmax_cross_entropy",2,$3,$5);} KWARG_LIST RP{$$=tmp_node;$$->attrs=$7;tmp_node=NULL;}|
     REDUCE_MEAN LP EXPRESSION RP {$$=new_node("reduce_mean",1,$3);}|
     UNSTACK LP EXPRESSION {tmp_node=new_node("unstack",1,$3);}KWARG_LIST RP {$$=tmp_node;$$->attrs = $5;tmp_node=NULL;}|
     BASICLSTMCELL LP Serial RP {$$=new_node("basicLSTMcell",0);$$->attrs = $3;}|
