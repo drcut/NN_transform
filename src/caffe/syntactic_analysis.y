@@ -25,7 +25,7 @@ struct node* tmp_node = NULL;
 %%
 
 Program:ExtDefList{$$ = "program";};
-ExtDefList:ExtDef ExtDefList | {$$="extdeflist";};
+ExtDefList:ExtDef ExtDefList | {$$="ExtDefList";};
 
 NormalOP: PLUS | MINUS | MUL |DIV {$$ = $1;};
 Number: MINUS Number {$$=concat_str(2,"-",$2);}|
@@ -40,10 +40,13 @@ AttrDef:
     TYPE SEMICOLON STRING {tmp_node->op_name = $3;}|
     TOP SEMICOLON STRING {add_node($3,tmp_node);}|
     BOTTOM SEMICOLON STRING {printf("add input %s\n",$3);add_input(tmp_node,get_node($3));}|
-    PARAM LC PARAM_ATTRS RC {tmp_node->attrs = $3;};
-PARAM_ATTRS: PARAM_ATTR{$$=$1;}|PARAM_ATTR PARAM_ATTRS{$$ = concat_str(3,$1,",",$2);};
+    PARAM LC PARAM_ATTRS RC {if(!tmp_node->attrs)tmp_node->attrs = $3;
+                                else tmp_node->attrs = concat_str(3,tmp_node->attrs,",",$3);};
+PARAM_ATTRS: PARAM_ATTR {$$=$1;} | PARAM_ATTR PARAM_ATTRS {$$ = concat_str(3,$1,",",$2);};
 PARAM_ATTR: ATTR_NAME SEMICOLON LC DIM_LIST RC {$$ = concat_str(3,$1,":",$4);}|
-            ATTR_NAME SEMICOLON PARAM_ATTR_VAL {$$ = concat_str(3,$1,":",$3);};
+            TYPE SEMICOLON STRING {$$=concat_str(3,$1,":",$3);}|
+            ATTR_NAME SEMICOLON PARAM_ATTR_VAL {$$ = concat_str(3,$1,":",$3);}|
+            ATTR_NAME LC PARAM_ATTRS RC {$$ = concat_str(3,$1,":",$3);};
 PARAM_ATTR_VAL:
-    Number {$$=$1;}| POOL_ATTR {$$=$1;};
+    Number {$$=$1;}| POOL_ATTR {$$=$1;}|STRING{$$=$1;};
 DIM_LIST: {$$ = "";}| DIM SEMICOLON Number DIM_LIST {$$ = concat_str(3,$3,",",$4);};

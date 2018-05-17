@@ -37,14 +37,14 @@ LB \[
 RB \]
 LC \{
 RC \}
-PARAM [a-zA-Z_0-9]*_param
+PARAM [a-zA-Z_0-9]*param
 NAME name
 TYPE type
 TOP top
 BOTTOM bottom
 LAYER layer
 DIM dim
-ATTR_NAME [a-zA-Z_]+
+ATTR_NAME [a-zA-Z_]*
 STRING [\'\"][a-zA-Z_0-9]*[\'\"]
 MASS [^\{\}]+
 %%
@@ -82,8 +82,8 @@ True|False {printf("get bool:%s\n",yytext);
 {RP} {yylval.str = ")";return RP;}
 {LB} {yylval.str = "[";return LB;}
 {RB} {yylval.str = "]";return RB;}
-{LC} {return LC;}
-{RC} {return RC;}
+{LC} {printf("get lc\n");return LC;}
+{RC} {printf("get rc\n");return RC;}
 {DIM} {return DIM;}
 {COMMA} {yylval.str = ",";return COMMA;}
 {WELL} {yylval.str = "#";return WELL;}
